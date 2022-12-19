@@ -1,6 +1,7 @@
 const userModel = require("../model/userModel")
 const aws = require('aws-sdk')
 const bcrypt = require('bcrypt')
+const jwt= require('jsonwebtoken')
 const {validName,isValid,validPhone,validEmail, isValidPincode,isValidPassword,isValidObjectIds }=require('../validator/validation')
 
 //AWS
@@ -68,9 +69,7 @@ const createUser = async function (req, res) {
         data.password=password
 
         //Address
-        //console.log(address)
         address = JSON.parse(address)
-        //console.log(address)
         if (address) {
             if (typeof address != "object") return res.status(400).send({ status: false, message: "address is in incorrect format" })
 
@@ -127,6 +126,26 @@ const createUser = async function (req, res) {
     }
 }
 
+//==========================================Login==============================================================
+const login = async function(req,res){
+    try{
+        const email=req.body.email
+        const password=req.body.password
+        const check = await userModel.findOne({email:email})
+        if(!check) return res.status(400).send({status:false,message:"Please provide correct Email Id"})
+        const passCompare=await bcrypt.compare(password, check.password)
+        
+        if( !passCompare) return res.status(400).send({status:false,message:"Please provide correct Password"})
+        else{ 
+        const token= jwt.sign({userId:check._id.toString(),password:password},"Secret key",{expiresIn:"5hr"})
+        return res.status(201).send({status:true,message:"Token generated",data:{userId:check._id, token:token}})
+    }
+}
+    catch(err){ 
+        res.status(500).send({status:false,message:err.message})
+    }
+}
+
 //=======================================Get User Details=======================================================
 const getUser = async function (req, res) {
     try {
@@ -144,4 +163,14 @@ const getUser = async function (req, res) {
 }
 
 
-module.exports = { createUser ,getUser}
+module.exports = { createUser ,getUser, login}
+
+
+
+
+
+
+
+
+
+
