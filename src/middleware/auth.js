@@ -8,7 +8,7 @@ const authenticate = function(req, res, next) {
         const bearer= bearerHeader.split(' ')
         const bearerToken= bearer[1]
         jwt.verify(bearerToken, "Secret key", function (err, decodedToken) {
-            if(err && err.message=="jwt expired") return res.status(400).send({status:false, message:"session expired"})
+            if(err && err.message=="jwt expired") return res.status(400).send({status:false, message:"session expired! login again"})
             if (err) { return res.status(401).send({ status: false, data: "invalid token" }) }
             req.token= decodedToken;
             next();
