@@ -251,7 +251,7 @@ const updateUser = async function (req, res) {
 
         data.address = address
 
-        let updateData = await userModel.findOneAndUpdate({ _id: userId }, { $set: data }, { new: true })
+        let updateData = await userModel.findOneAndUpdate({ _id: userId }, { $set: data },{new:true})
         if (!updateData) {
             return res.status(400).send({ status: false, message: "data not updated" })
         }

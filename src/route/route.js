@@ -13,8 +13,7 @@ router.post('/login', userController.login)
 router.get("/user/:userId/profile",auth.authenticate , userController.getUser)
 router.put("/user/:userId/profile", auth.authenticate,auth.authorize ,userController.updateUser)
 
-
-
+router.get(" /products", productController.getProductbyQuery)
 router.all("/*", function (req, res) {
 try{
     res.status(404).send({status: false,msg: "The api you request is not available"})
