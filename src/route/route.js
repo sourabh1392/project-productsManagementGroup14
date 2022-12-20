@@ -9,10 +9,11 @@ const productController=require("../controller/productController")
 
 
 router.post("/register", userController.createUser)
+router.post('/login', userController.login)
+router.get("/user/:userId/profile",auth.authenticate , userController.getUser)
+router.put("/user/:userId/profile", auth.authenticate,auth.authorize ,userController.updateUser)
 
-router.get("/user/:userId/profile", userController.getUser)
 
-router.post('/login',userController.login)
 
 router.all("/*", function (req, res) {
 try{
