@@ -13,6 +13,9 @@ router.post('/login', userController.login)
 router.get("/user/:userId/profile",auth.authenticate , userController.getUser)
 router.put("/user/:userId/profile", auth.authenticate,auth.authorize ,userController.updateUser)
 
+router.post("/products",productController.createProduct)
+router.get("/products",productController.getProducts)
+
 
 
 router.all("/*", function (req, res) {

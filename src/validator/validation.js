@@ -36,4 +36,9 @@ const  isValidObjectIds =function(id){
     return check
 }
 
-module.exports={validName,isValid,validPhone,validEmail,isValidPincode,isValidPassword,isValidObjectIds}
+const validImage=function(image){
+    const urlreg = /^https?:\/\/(.+\/)+.+(\.(gif|png|jpg|jpeg|webp|svg|psd|bmp|tif))$/i
+    return urlreg.test(image)
+}
+
+module.exports={validName,isValid,validPhone,validEmail,isValidPincode,isValidPassword,isValidObjectIds,validImage}
