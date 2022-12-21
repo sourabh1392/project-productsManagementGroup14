@@ -5,30 +5,7 @@ const jwt = require('jsonwebtoken')
 const {uploadFile}=require("../aws")
 const { validName, isValid, validPhone, validEmail, isValidPincode, isValidPassword, isValidObjectIds } = require('../validator/validation')
 
-//AWS
-// aws.config.update({
-//     accessKeyId: "AKIAY3L35MCRZNIRGT6N",
-//     secretAccessKey: "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",
-//     region: "ap-south-1"
-// })
 
-// let uploadFile = async (file) => {
-//     return new Promise(function (resolve, reject) {
-//         let s3 = new aws.S3({ apiVersion: '2006-03-01' })
-//         var uploadParams = {
-//             ACL: "public-read",
-//             Bucket: "classroom-training-bucket",
-//             Key: "abc/" + file.originalname,
-//             Body: file.buffer
-//         }
-//         s3.upload(uploadParams, function (err, data) {
-//             if (err) return reject({ error: err })
-//             // console.log(data)
-//             // console.log("file uploaded successfully")
-//             return resolve(data.Location)
-//         })
-//     })
-// }
 
 //=======================================Create User===========================================================
 const createUser = async function (req, res) {
@@ -140,7 +117,7 @@ const login = async function (req, res) {
         if (!passCompare) return res.status(400).send({ status: false, message: "Please provide correct Password" })
         else {
             const token = jwt.sign({ userId: check._id.toString(), password: password }, "Secret key", { expiresIn: "5hr" })
-            return res.status(201).send({ status: true, message: "Token generated", data: { userId: check._id, token: token } })
+            return res.status(200).send({ status: true, message: "Token generated", data: { userId: check._id, token: token } })
         }
     }
     catch (err) {
@@ -207,6 +184,7 @@ const updateUser = async function (req, res) {
             data.password = password
         }
 
+        let obj={}
         if (address) {
             address = JSON.parse(address)
             if (typeof address != "object") return res.status(400).send({ status: false, message: "address is in incorrect format" })
@@ -215,42 +193,47 @@ const updateUser = async function (req, res) {
             if (address.shipping) {
                 if (address.shipping.street) {
                     if (!isValid(address.shipping.street)) return res.status(400).send({ status: false, message: "shipping street is in wrong format" })
+                obj['address.shipping.street']=address.shipping.street
                 }
 
                 if (address.shipping.city) {
                     if (!isValid(address.shipping.city)) return res.status(400).send({ status: false, message: "shipping city is in wrong format" })
                     if (!validName(address.shipping.city)) return res.status(400).send({ status: false, message: "shipping city can only take Alphabets" })
+                obj['address.shipping.city']=address.shipping.city
                 }
 
                 if (address.shipping.pincode) {
                     if (typeof address.shipping.pincode != "number") return res.status(400).send({ status: false, message: "shipping pincode is in wrong format" })
                     if (!isValidPincode(address.shipping.pincode)) return res.status(400).send({ status: false, message: "Pincode should be 6 characters long" })
+                obj['address.shipping.pincode']=address.shipping.pincode
                 }
             }
             //Billing
             if (address.billing) {
                 if (address.billing.street) {
                     if (!isValid(address.billing.street)) return res.status(400).send({ status: false, message: "billing street is in wrong format" })
+                obj['address.billing.street']=address.billing.street
                 }
                 if (address.billing.city) {
                     if (!isValid(address.billing.city)) return res.status(400).send({ status: false, message: "billing city is in wrong format" })
                     if (!validName(address.billing.city)) return res.status(400).send({ status: false, message: "shipping city can only take Alphabets" })
+                obj['address.billing.city']=address.billing.city
                 }
                 if (address.billing.pincode) {
                     if (typeof address.billing.pincode != "number") return res.status(400).send({ status: false, message: "billing pincode is in incorrect format" })
                     if (!isValidPincode(address.billing.pincode)) return res.status(400).send({ status: false, message: "Pincode should be 6 characters long" })
+                obj['address.billing.pincode']=address.billing.pincode
                 }
             }
         }
 
-        data.address = address
+        delete data.address
+        //data.address = address
 
-        let updateData = await userModel.findOneAndUpdate({ _id: userId }, { $set: data },{new:true})
-        if (!updateData) {
-            return res.status(400).send({ status: false, message: "data not updated" })
-        }
-        else { return res.status(200).send({ status: true, message: "User profile updated", data: updateData }) }
+        let updateData = await userModel.findOneAndUpdate({ _id: userId }, { ...data, ...obj },{new:true})
+         return res.status(200).send({ status: true, message: "User profile updated", data: updateData })
     }
+    
     catch (err) {
         return res.status(500).send({ status: false, message: err.message })
     }
