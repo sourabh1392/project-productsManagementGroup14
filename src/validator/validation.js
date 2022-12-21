@@ -41,4 +41,9 @@ const validImage=function(image){
     return urlreg.test(image)
 }
 
-module.exports={validName,isValid,validPhone,validEmail,isValidPincode,isValidPassword,isValidObjectIds,validImage}
+const isValidProductSize=function(size){ 
+    const enumArr=["S", "XS", "M", "X", "L", "XXL", "XL"]
+    if(enumArr.indexOf(size)==-1) return false
+    else return true
+}
+module.exports={validName,isValid,validPhone,validEmail,isValidPincode,isValidPassword,isValidObjectIds,validImage,isValidProductSize}
