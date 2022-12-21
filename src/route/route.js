@@ -15,6 +15,7 @@ router.put("/user/:userId/profile", auth.authenticate,auth.authorize ,userContro
 
 router.post("/products",productController.createProduct)
 router.get("/products",productController.getProducts)
+router.get("/products/:productId", productController.getProductByParams )
 
 
 

@@ -1,8 +1,6 @@
 const productModel=require("../model/productModel")
-const {isValidObjectIds }= require("../validator/validatior")
-const productModel = require("../model/productModel")
 const { uploadFile } = require("../aws")
-const { isValid } = require('../validator/validation')
+const { isValid , isValidObjectIds} = require('../validator/validation')
 
 
 const createProduct = async (req, res) => {
@@ -129,5 +127,18 @@ const getProducts = async function (req, res) {
         return res.status(500).send({ Status: false, message: err.message })
     }
 }
+const getProductByParams= async function(req,res){
+try{
+    let productId= req.params.productId
+    if(!productId) return res.status(400).send({status:false, meassge:"enter the productid"})
+    if(!isValidObjectIds(productId)) return res.status(400).send({status:false, meassge:"enter valid productid"})
+    let getpro=  await productModel.findOne({productId})
+    if(!getpro) return res.status(404).send({status:false, message:"no such data found"})
+    return res.status(200).send({status:false, data:getpro})
+}
+catch(err){
+    return res.status(500).send({status:false, message:err.message})
+}
+}
 
-module.exports = { getProducts, createProduct }
+module.exports = { getProducts, createProduct, getProductByParams}
