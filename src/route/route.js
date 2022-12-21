@@ -1,23 +1,23 @@
 const express=require("express")
 const router=express.Router()
-const auth=require("../middleware/auth")
-const userController=require("../controller/userController")
+const {authenticate, authorize }=require("../middleware/auth")
+const {createUser, login, getUser, updateUser }=require("../controller/userController")
 const cartController=require("../controller/cartController")
 const orderController=require("../controller/orderController")
-const productController=require("../controller/productController")
+const {createProduct, getProducts, getProductById, updateProduct , deleteProduct }=require("../controller/productController")
 
+//user
+router.post("/register", createUser)
+router.post('/login', login)
+router.get("/user/:userId/profile", authenticate , getUser)
+router.put("/user/:userId/profile", authenticate, authorize , updateUser ) 
 
-
-router.post("/register", userController.createUser)
-router.post('/login', userController.login)
-router.get("/user/:userId/profile",auth.authenticate , userController.getUser)
-router.put("/user/:userId/profile", auth.authenticate,auth.authorize ,userController.updateUser)
-
-router.post("/products",productController.createProduct)
-router.get("/products",productController.getProducts)
-router.get("/products/:productId", productController.getProductById)
-router.put("/products/:productId", productController.updateProduct )
-router.delete("/products/:productId", productController.deleteProduct)
+//product
+router.post("/products", createProduct)
+router.get("/products", getProducts)
+router.get("/products/:productId", getProductById)
+router.put("/products/:productId", updateProduct )
+router.delete("/products/:productId", deleteProduct)
 
 router.all("/*", function (req, res) {
 try{

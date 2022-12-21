@@ -1,12 +1,13 @@
 const productModel = require("../model/productModel")
 const { uploadFile } = require("../aws")
 const { isValid, isValidProductSize, isValidObjectIds } = require('../validator/validation')
+const moment = require('moment')
 
 
 
 const createProduct = async (req, res) => {
     try {
-        let data = req.body
+        let data = req.body 
         let { title, description, price, currencyId, currencyFormat, isFreeShipping, style, availableSizes, installments, isDeleted } = data
         if (Object.keys(data).length == 0) {
             return res.status(400).send({ Status: false, message: "Please enter data to create product" })
@@ -36,7 +37,7 @@ const createProduct = async (req, res) => {
         if (!price || price == 0) {
             return res.status(400).send({ status: false, message: "Please enter price" })
         }
-        if (!Number(price)) return res.status(400).send({ tatus: false, message: "Price should be a valid number format" })
+        if (!Number(price)) return res.status(400).send({ status: false, message: "Price should be a valid number format" })
         data.price = Number(price).toFixed(2)
 
         //currencyId    
@@ -65,7 +66,7 @@ const createProduct = async (req, res) => {
 
         //isFreeShipping
         if (isFreeShipping) {
-            if (!(isFreeShipping == "true" || "false")) return res.status(400).send({ status: false, message: "isFreeShipping should be either true or false" })
+            if (!(isFreeShipping == "true" || isFreeShipping=="false")) return res.status(400).send({ status: false, message: "isFreeShipping should be either true or false" })
         }
 
         //availableSizes
@@ -82,7 +83,7 @@ const createProduct = async (req, res) => {
 
         //installments
         if (installments) {
-            if (!Number(installments)) return res.status(400).send({ tatus: false, message: "Installments should be in a valid number format" })
+            if (!Number(installments)) return res.status(400).send({ status: false, message: "Installments should be in a valid number format" })
         }
 
         let productCreated = await productModel.create(data)
@@ -224,8 +225,8 @@ const updateProduct = async function (req, res) {
         }
 
         if (isFreeShipping) {
-            if (!(isFreeShipping == "true" || "false")) return res.status(400).send({ status: false, message: "isFreeShipping should be either true or false" })
-
+            if (!(isFreeShipping == "true" || isFreeShipping=="false")) return res.status(400).send({ status: false, message: "isFreeShipping should be either true or false" })
+        }
 
             if (availableSizes) {
                 if (availableSizes.includes(',')) return res.status(400).send({ status: false, message: "Please separate the available sizes with space" })
@@ -242,17 +243,16 @@ const updateProduct = async function (req, res) {
             if (installments) {
                 if (!Number(installments)) return res.status(400).send({ tatus: false, message: "Installments should be in a valid number format" })
             }
-        }
+        
         let updateData= await productModel.findOneAndUpdate({_id:productId,isDeleted:false},{$set:data},{new:true})
         if(!updateData) return res.status(400).send({status:false, message:"data not updated"})
         return res.status(200).send({status:false, message:"product updated successfully", data:updateData})
     }
-
     catch (err) {
-        return res.status(500).send({ status: false, err: err.message })
+        return res.status(500).send({ status: false, message: err.message })
     }
 }
-//=======================================update product =====================================================
+//=======================================delete product =====================================================
 
 const deleteProduct= async function(req,res){
     try{
@@ -261,7 +261,7 @@ const deleteProduct= async function(req,res){
         const findProduct = await productModel.findById(productId)
         if (!findProduct) return res.status(404).send({status:false, message:"product document is not found"})
         if(findProduct.isDeleted == true) return res.status(400).send({ status: false, message: "Product is already deleted" })
-      let deletedata= await productModel.findOneAndUpdate({_id:productId},{isDeleted:true},{new:true})
+      let deletedata= await productModel.findOneAndUpdate({_id:productId},{isDeleted:true,deletedAt:moment().format()},{new:true})
       if(!deletedata) return res.status(400).send({status:false, message:"product is not deleted"})
         return res.status(200).send({ status: true, message: "Product deleted successfully", data:deletedata})
     }

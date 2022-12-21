@@ -51,8 +51,7 @@ const productSchema=new mongoose.Schema({
             // at least one size
         }, 
         installments: {
-            type:Number,
-            trim:true
+            type:Number
         },
         deletedAt: {
             type:Date, 
