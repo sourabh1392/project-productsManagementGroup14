@@ -1,13 +1,13 @@
 const productModel = require("../model/productModel")
 const { uploadFile } = require("../aws")
 const { isValid, isValidProductSize, isValidObjectIds } = require('../validator/validation')
-const { findOneAndUpdate } = require("../model/userModel")
+
 
 
 const createProduct = async (req, res) => {
     try {
         let data = req.body
-        let { title, description, price, currencyId,productImage, currencyFormat, isFreeShipping, style, availableSizes, installments, isDeleted } = data
+        let { title, description, price, currencyId, currencyFormat, isFreeShipping, style, availableSizes, installments, isDeleted } = data
         if (Object.keys(data).length == 0) {
             return res.status(400).send({ Status: false, message: "Please enter data to create product" })
         }
@@ -55,11 +55,7 @@ const createProduct = async (req, res) => {
             return res.status(400).send({ status: false, message: "currency format must be Indian" })
         }
 
-
-        //productImage
-        if(!productImage){
-            return res.status(400).send({status:false, message:"please provide productImage"})
-        }
+        
         let files = req.files
         if (!(files && files.length)) {
             return res.status(400).send({ status: false, message: "Please Provide The Profile Image" });
