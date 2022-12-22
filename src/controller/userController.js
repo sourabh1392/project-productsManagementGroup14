@@ -15,21 +15,21 @@ const createUser = async function (req, res) {
         if (Object.keys(data).length == 0) return res.status(400).send({ status: false, message: "enter the data" })
 
         //First Name
-        if (!isValid(fname)) return res.status(400).send({ status: false, message: "First Name is mandatory" })
+        if(!fname) return res.status(400).send({ status: false, message: "First Name is mandatory" })
         if (!validName(fname)) return res.status(400).send({ status: false, message: "First Name can only take alphabets" })
-
+    
         //Last Name
-        if (!isValid(lname)) return res.status(400).send({ status: false, message: "Last Name is mandatory" })
+        if (!lname) return res.status(400).send({ status: false, message: "Last Name is mandatory" })
         if (!validName(lname)) return res.status(400).send({ status: false, message: "Last Name can only take alphabets" })
 
         //Email
-        if (!isValid(email)) return res.status(400).send({ status: false, message: "Enter Email Id" })
+        if (!email) return res.status(400).send({ status: false, message: "Email is mandatory" })
         if (!validEmail(email)) return res.status(400).send({ status: false, message: "Invalid Email Id" })
         let emailExist = await userModel.findOne({ email: email })
         if (emailExist) return res.status(400).send({ status: false, message: "Email Id already exists" })
 
         //Phone
-        if (!isValid(phone)) return res.status(400).send({ status: false, message: "Enter Phone No" })
+        if (!phone) return res.status(400).send({ status: false, message: "Phone No is mandatory" })
         if (!validPhone(phone)) return res.status(400).send({ status: false, message: "Invalid Phone No" })
         let phoneExist = await userModel.findOne({ phone: phone })
         if (phoneExist) return res.status(400).send({ status: false, message: "Phone No already exists" })
@@ -41,15 +41,16 @@ const createUser = async function (req, res) {
         }
         const uploadProfileImage = await uploadFile(files[0])
         data.profileImage = uploadProfileImage
-
+        
         //Password
+        if(!password) return res.status(400).send({status:false, message:"password is mandatory"})
         if (!isValidPassword(password)) return res.status(400).send({ status: false, message: "Password should be between 8 to 15 characters and should contain atleast one uppercase & lowercase letter,a number and a special character" })
         password = await bcrypt.hash(password, 10)
         data.password = password
 
         //Address
-        address = JSON.parse(address)
         if (address) {
+            address = JSON.parse(address)
             if (typeof address != "object") return res.status(400).send({ status: false, message: "address is in incorrect format" })
 
             //Shipping   
