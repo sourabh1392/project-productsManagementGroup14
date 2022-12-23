@@ -2,7 +2,7 @@ const express=require("express")
 const router=express.Router()
 const {authenticate, authorize }=require("../middleware/auth")
 const {createUser, login, getUser, updateUser }=require("../controller/userController")
-const cartController=require("../controller/cartController")
+const {createCart}=require("../controller/cartController")
 const orderController=require("../controller/orderController")
 const {createProduct, getProducts, getProductById, updateProduct , deleteProduct }=require("../controller/productController")
 
@@ -18,6 +18,9 @@ router.get("/products", getProducts)
 router.get("/products/:productId", getProductById)
 router.put("/products/:productId", updateProduct )
 router.delete("/products/:productId", deleteProduct)
+
+//cart
+router.post("/users/:userId/cart",authenticate,createCart)
 
 router.all("/*", function (req, res) {
 try{
