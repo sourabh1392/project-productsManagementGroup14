@@ -20,15 +20,15 @@ items: [{
     // min 1
 }
 }],
-totalPrice: {
+totalPrice: {                     //comment: "Holds total price of all the items in the cart"
     type:Number, 
     required:true, 
-  //"Holds total price of all the items in the cart"
+    
 },
-totalItems: {
+totalItems: {                     //comment: "Holds total number of items in the cart"
     type:Number, 
     required:true, 
-    //comment: "Holds total number of items in the cart"
+    
 },
 },{ timestamps: true })
 
