@@ -1,13 +1,11 @@
 const userModel = require("../model/userModel")
-const aws = require('aws-sdk')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
-const {uploadFile}=require("../aws")
+const { uploadFile } = require("../aws")
 const { validName, isValid, validPhone, validEmail, isValidPincode, isValidPassword, isValidObjectIds } = require('../validator/validation')
 
 
-
-//=======================================Create User===========================================================
+//=======================================Create User===================================================
 const createUser = async function (req, res) {
     try {
         let data = req.body
@@ -15,9 +13,9 @@ const createUser = async function (req, res) {
         if (Object.keys(data).length == 0) return res.status(400).send({ status: false, message: "enter the data" })
 
         //First Name
-        if(!fname) return res.status(400).send({ status: false, message: "First Name is mandatory" })
+        if (!fname) return res.status(400).send({ status: false, message: "First Name is mandatory" })
         if (!validName(fname)) return res.status(400).send({ status: false, message: "First Name can only take alphabets" })
-    
+
         //Last Name
         if (!lname) return res.status(400).send({ status: false, message: "Last Name is mandatory" })
         if (!validName(lname)) return res.status(400).send({ status: false, message: "Last Name can only take alphabets" })
@@ -41,9 +39,9 @@ const createUser = async function (req, res) {
         }
         const uploadProfileImage = await uploadFile(files[0])
         data.profileImage = uploadProfileImage
-        
+
         //Password
-        if(!password) return res.status(400).send({status:false, message:"password is mandatory"})
+        if (!password) return res.status(400).send({ status: false, message: "password is mandatory" })
         if (!isValidPassword(password)) return res.status(400).send({ status: false, message: "Password should be between 8 to 15 characters and should contain atleast one uppercase & lowercase letter,a number and a special character" })
         password = await bcrypt.hash(password, 10)
         data.password = password
@@ -106,7 +104,7 @@ const createUser = async function (req, res) {
     }
 }
 
-//==========================================Login==============================================================
+//==========================================Login============================================================
 const login = async function (req, res) {
     try {
         const email = req.body.email
@@ -126,7 +124,7 @@ const login = async function (req, res) {
     }
 }
 
-//=======================================Get User Details=======================================================
+//=======================================Get User Details================================================
 const getUser = async function (req, res) {
     try {
         let userId = req.params.userId
@@ -141,7 +139,7 @@ const getUser = async function (req, res) {
         return res.status(500).send({ status: false, message: err.message })
     }
 }
-//=======================================Update User Details=======================================================
+//=======================================Update User Details==============================================
 
 const updateUser = async function (req, res) {
     try {
@@ -185,7 +183,7 @@ const updateUser = async function (req, res) {
             data.password = password
         }
 
-        let obj={}
+        let obj = {}
         if (address) {
             address = JSON.parse(address)
             if (typeof address != "object") return res.status(400).send({ status: false, message: "address is in incorrect format" })
@@ -194,47 +192,46 @@ const updateUser = async function (req, res) {
             if (address.shipping) {
                 if (address.shipping.street) {
                     if (!isValid(address.shipping.street)) return res.status(400).send({ status: false, message: "shipping street is in wrong format" })
-                obj['address.shipping.street']=address.shipping.street
+                    obj['address.shipping.street'] = address.shipping.street
                 }
 
                 if (address.shipping.city) {
                     if (!isValid(address.shipping.city)) return res.status(400).send({ status: false, message: "shipping city is in wrong format" })
                     if (!validName(address.shipping.city)) return res.status(400).send({ status: false, message: "shipping city can only take Alphabets" })
-                obj['address.shipping.city']=address.shipping.city
+                    obj['address.shipping.city'] = address.shipping.city
                 }
 
                 if (address.shipping.pincode) {
                     if (typeof address.shipping.pincode != "number") return res.status(400).send({ status: false, message: "shipping pincode is in wrong format" })
                     if (!isValidPincode(address.shipping.pincode)) return res.status(400).send({ status: false, message: "Pincode should be 6 characters long" })
-                obj['address.shipping.pincode']=address.shipping.pincode
+                    obj['address.shipping.pincode'] = address.shipping.pincode
                 }
             }
             //Billing
             if (address.billing) {
                 if (address.billing.street) {
                     if (!isValid(address.billing.street)) return res.status(400).send({ status: false, message: "billing street is in wrong format" })
-                obj['address.billing.street']=address.billing.street
+                    obj['address.billing.street'] = address.billing.street
                 }
                 if (address.billing.city) {
                     if (!isValid(address.billing.city)) return res.status(400).send({ status: false, message: "billing city is in wrong format" })
                     if (!validName(address.billing.city)) return res.status(400).send({ status: false, message: "shipping city can only take Alphabets" })
-                obj['address.billing.city']=address.billing.city
+                    obj['address.billing.city'] = address.billing.city
                 }
                 if (address.billing.pincode) {
                     if (typeof address.billing.pincode != "number") return res.status(400).send({ status: false, message: "billing pincode is in incorrect format" })
                     if (!isValidPincode(address.billing.pincode)) return res.status(400).send({ status: false, message: "Pincode should be 6 characters long" })
-                obj['address.billing.pincode']=address.billing.pincode
+                    obj['address.billing.pincode'] = address.billing.pincode
                 }
             }
         }
 
         delete data.address
-        //data.address = address
 
-        let updateData = await userModel.findOneAndUpdate({ _id: userId }, { ...data, ...obj },{new:true})
-         return res.status(200).send({ status: true, message: "User profile updated", data: updateData })
+        let updateData = await userModel.findOneAndUpdate({ _id: userId }, { ...data, ...obj }, { new: true })
+        return res.status(200).send({ status: true, message: "User profile updated", data: updateData })
     }
-    
+
     catch (err) {
         return res.status(500).send({ status: false, message: err.message })
     }
