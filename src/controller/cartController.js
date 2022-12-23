@@ -11,9 +11,7 @@ const createCart = async function (req, res) {
         if (!isValidObjectIds(userId)) return res.status(400).send({ status: false, message: "Invalid User Id" })
         let findUser = await userModel.findById(userId)
         if (!findUser) return res.status(404).send({ status: false, message: "User not found" })
-
-        //if(req.token.userId!==userId) return res.status(403).send({status:false, message:"Unauthorized User"})
-
+        
         let data = req.body
         let { cartId, productId, quantity } = data
         if (Object.keys(data).length == 0) return res.status(400).send({ status: false, message: "No data given for creation" })
@@ -26,10 +24,6 @@ const createCart = async function (req, res) {
             if (!isValid(cartId)) return res.status(400).send({ status: false, message: "Cart Id can't be empty" })
             if (!isValidObjectIds(cartId)) return res.status(400).send({ status: false, message: "Invalid Cart Id" })
         }
-        // if(quantity){
-        //     if(quantity==0) return res.status(400).send({status:false ,message:"Quantity should be greater than 0"})
-        //     if(typeof quantity!=='number') return res.status(400).send({status:false, message:"Invalid quantity"})
-        // }
 
         if (!quantity) {
             if (quantity == 0) return res.status(400).send({ status: false, message: "Quantity should be greater than 0" })
@@ -43,8 +37,6 @@ const createCart = async function (req, res) {
         if (cartId) {
             const findCart = await cartModel.findById(cartId).populate([{ path: 'items.productId' }])
             if (!findCart) return res.status(404).send({ status: false, message: "Cart not found" })
-            // console.log(findCart.userId.toString())
-            // console.log(userId)
             if (findCart.userId.toString() !== userId) return res.status(403).send({ status: false, message: "Unauthorized User" })
 
             let itemsArray = findCart.items
@@ -53,8 +45,6 @@ const createCart = async function (req, res) {
             let newProduct = true
 
             for (let i = 0; i < itemsArray.length; i++) {
-                // console.log(productId)
-                // console.log(itemsArray[i].productId._id.toString())
                 if (itemsArray[i].productId._id.toString() == productId) {     //product already exists in the cart
                     itemsArray[i].quantity += quantity
                     totalPrice += itemsArray[i].productId.price * quantity
@@ -107,8 +97,6 @@ const updateCart = async function (req, res) {
         const findUser = await userModel.findById(userId)
         if (!findUser) return res.status(404).send({ status: false, message: "User not found" })
 
-        //if(req.token.userId!==userId) return res.status(403).send({status:false, message:"Unauthorized User"})
-
         let data = req.body
         let { productId, cartId, removeProduct } = data
 
@@ -120,7 +108,6 @@ const updateCart = async function (req, res) {
         if (!isValid(cartId)) return res.status(400).send({ status: false, message: "Cart Id can't be empty" })
         if (!isValidObjectIds(cartId)) return res.status(400).send({ status: false, message: "Invalid Cart Id" })
 
-        //if(!removeProduct) return res.status(400).send({status:false, message:"remove product key is mandatory"})
         if (!(removeProduct == 0 || removeProduct == 1)) return res.status(400).send({ status: false, message: "Set removeProduct to 0 to remove the product from the cart or 1 to decrement it's quantity by 1 " })
 
         const findProduct = await productModel.findOne({ _id: productId, isDeleted: false })
@@ -192,14 +179,3 @@ module.exports = { createCart, updateCart }
 
 
 
-
-
-
-// const findCart = await Cart.findOne({ userId }).populate({
-//     path: "items",
-//     populate: {
-//         path: "productId",
-//         model: "Product",
-//         select: { title: 1, productImage: 1, style: 1, price: 1, _id: 0 },
-//     },
-// });

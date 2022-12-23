@@ -3,7 +3,6 @@ const router=express.Router()
 const {authenticate, authorize }=require("../middleware/auth")
 const {createUser, login, getUser, updateUser }=require("../controller/userController")
 const {createCart, updateCart} =require("../controller/cartController")
-const orderController=require("../controller/orderController")
 const {createProduct, getProducts, getProductById, updateProduct , deleteProduct }=require("../controller/productController")
 
 //=======================================User APIs========================================================
