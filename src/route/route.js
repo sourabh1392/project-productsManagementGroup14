@@ -19,6 +19,7 @@ router.get("/products/:productId", getProductById)
 router.put("/products/:productId", updateProduct )
 router.delete("/products/:productId", deleteProduct)
 
+router.post("/users/:userId/cart",cartController.createCart)
 router.all("/*", function (req, res) {
 try{
     res.status(404).send({status: false,msg: "The api you request is not available"})

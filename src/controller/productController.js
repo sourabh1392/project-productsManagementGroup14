@@ -4,7 +4,7 @@ const { isValid, isValidProductSize, isValidObjectIds } = require('../validator/
 const moment = require('moment')
 
 
-
+//=======================================Create Product===========================================================
 const createProduct = async (req, res) => {
     try {
         let data = req.body 
