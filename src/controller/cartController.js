@@ -5,6 +5,7 @@ const { isValid, isValidObjectIds } = require('../validator/validation')
 
 
 //====================================CREATE CART========================================================
+
 const createCart = async function (req, res) {
     try {
         let userId = req.params.userId
@@ -88,8 +89,8 @@ const createCart = async function (req, res) {
     }
 }
 
-
 //=======================================UPDATE CART====================================================
+
 const updateCart = async function (req, res) {
     try {
         const userId = req.params.userId
@@ -161,8 +162,8 @@ const updateCart = async function (req, res) {
     }
 }
 
-
 //=======================================GET CART DETAILS================================================
+
 const getCart = async function(req,res){
     try{
 
@@ -172,10 +173,4 @@ const getCart = async function(req,res){
     }
 }
 
-
-
 module.exports = { createCart, updateCart }
-
-
-
-

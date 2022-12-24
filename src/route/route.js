@@ -22,11 +22,9 @@ router.delete("/products/:productId", deleteProduct)
 router.post("/users/:userId/cart", authenticate, authorize, createCart)
 router.put("/users/:userId/cart", authenticate,authorize, updateCart)
 
-
 router.all("/*", function (req, res) {
 try{
     res.status(404).send({status: false,msg: "The api you request is not available"})
-
 }catch(err){res.send(err.message)}})
 
 module.exports=router
