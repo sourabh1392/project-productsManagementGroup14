@@ -2,7 +2,7 @@ const express=require("express")
 const router=express.Router()
 const {authenticate, authorize }=require("../middleware/auth")
 const {createUser, login, getUser, updateUser }=require("../controller/userController")
-const {createCart, updateCart} =require("../controller/cartController")
+const {createCart, updateCart ,getCart ,deleteCart} =require("../controller/cartController")
 const {createProduct, getProducts, getProductById, updateProduct , deleteProduct }=require("../controller/productController")
 
 //=======================================User APIs========================================================
@@ -21,6 +21,12 @@ router.delete("/products/:productId", deleteProduct)
 //=======================================Cart APIs==========================================================
 router.post("/users/:userId/cart", authenticate, authorize, createCart)
 router.put("/users/:userId/cart", authenticate,authorize, updateCart)
+router.get("/users/:userId/cart", authenticate,authorize, getCart)
+router.delete("/users/:userId/cart", authenticate,authorize, deleteCart)
+
+//=======================================Order APIs==========================================================
+
+
 
 router.all("/*", function (req, res) {
 try{
