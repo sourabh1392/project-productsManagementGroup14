@@ -167,9 +167,18 @@ const updateCart = async function (req, res) {
 const getCart = async function (req, res) {
     try {
         let userId = req.params.userId
-        if (!userId) return res.status(400).send({ status: false, message: "Please provide userId" })
         if (!isValidObjectIds(userId)) return res.status(400).send({ status: false, message: "Invalid User Id" })
-        let cartData = await cartModel.findOne({ userId: userId })
+        let userData=await userModel.findById(userId)
+        if(!userData){
+            return res.status(404).send({status:false,message:"User Not Found"})
+        }
+        let cartData = await cartModel.findOne({ userId: userId }).populate({path:'items',
+              populate:{
+              path:'productId',
+              model:'Product',
+              select:{ title:1, productImage:1, style:1, price:1, _id:0},
+              },
+             })
         if (!cartData) return res.status(404).send({ status: false, message: "Cart Not Found" })
         if (cartData.totalItems == 0) return res.status(404).send({ status: false, message: "Cart is Empty" })
         return res.status(200).send({ status: true, message: 'Success', data: cartData })
@@ -184,15 +193,23 @@ const getCart = async function (req, res) {
 const deleteCart=async function(req,res){
     try{
         let userId = req.params.userId
-        if (!userId) return res.status(400).send({ status: false, message: "Please provide userId" })
         if (!isValidObjectIds(userId)) return res.status(400).send({ status: false, message: "Invalid User Id" })
+        let userData=await userModel.findById(userId)
+        if(!userData){
+            return res.status(404).send({status:false,message:"User Not Found"})
+        }
         let cartData = await cartModel.findOne({ userId: userId })
         if (!cartData) return res.status(404).send({ status: false, message: "Cart Not Found" })
-        if (cartData.totalItems == 0) return res.status(404).send({ status: false, message: "Cart is Empty" })
+        if (cartData.totalItems == 0 &&cartData.totalPrice==0 &&cartData.items.length==0) return res.status(400).send({ status: false, message: "Cart Already Deleted" })
         const deleteCart = await cartModel.findByIdAndUpdate(cartData._id, { items: [], totalPrice: 0, totalItems: 0 }, { new: true })
+        if(!deleteCart){
+            return res.status(400).send({status:false,message:"Cart Not Deleted"})
+        }
         return res.status(204).send({ status: true, message: 'Deleted Successfully. No items in the Cart', data: deleteCart })
     }
-    catch(error){return res.status(500).send({status:false,message:error.message})}
+    catch(error){
+        return res.status(500).send({status:false,message:error.message})
+    }
 }
 
 module.exports = { createCart, updateCart ,getCart ,deleteCart}

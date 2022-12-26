@@ -128,7 +128,6 @@ const login = async function (req, res) {
 const getUser = async function (req, res) {
     try {
         let userId = req.params.userId
-        if (!userId) return res.status(400).send({ status: false, message: "User Id should be present in params" })
         if (!isValidObjectIds(userId)) return res.status(400).send({ status: false, message: "Invalid userId" })
 
         const user = await userModel.findOne({ _id: userId })
@@ -144,7 +143,6 @@ const getUser = async function (req, res) {
 const updateUser = async function (req, res) {
     try {
         let userId = req.params.userId
-        if (!userId) return res.status(400).send({ status: false, message: "enter the userId" })
         if (!isValidObjectIds(userId)) return res.status(400).send({ status: false, message: "Invalid userId" })
 
         let data = req.body
