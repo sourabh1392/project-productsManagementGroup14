@@ -167,14 +167,14 @@ const getCart= async function(req,res){
     try{
         let userId= req.params.userId
         if(!isValidObjectIds(userId)) return res.status(400).send({status:false, message:"enter valid userId"})
-        let findUser= await userModel.findById({userId})
+        let findUser= await userModel.findById(userId)
         if(!findUser) return res.status(400).send({status:false, message:"user does not exist"})
         let findCart= await cartModel.findOne({userId}).select({__v:0})
         if(!findCart)  return res.status(400).send({status:false, message:"cart does not exist"})
         //for(let i=0;i<findCart.items.length;i++){
            // let c= findCart.items
 
-        return res.status(200).send({status:true, data: findc})
+        return res.status(200).send({status:true, data: findCart})
         
     }catch(err){
         return res.status(500).send({status:false, message:err.message})

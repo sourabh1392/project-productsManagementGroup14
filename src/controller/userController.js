@@ -5,7 +5,7 @@ const { uploadFile } = require("../aws")
 const { validName, isValid, validPhone, validEmail, isValidPincode, isValidPassword, isValidObjectIds } = require('../validator/validation')
 
 
-//=======================================Create User===================================================
+//=======================================Create User=================================================================
 const createUser = async function (req, res) {
     try {
         let data = req.body
