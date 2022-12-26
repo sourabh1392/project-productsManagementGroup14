@@ -166,7 +166,7 @@ const updateCart = async function (req, res) {
 
 const getCart = async function (req, res) {
     try {
-        let userId = req.param.userId
+        let userId = req.params.userId
         if (!userId) return res.status(400).send({ status: false, message: "Please provide userId" })
         if (!isValidObjectIds(userId)) return res.status(400).send({ status: false, message: "Invalid User Id" })
         let cartData = await cartModel.findOne({ userId: userId })
@@ -183,7 +183,7 @@ const getCart = async function (req, res) {
 
 const deleteCart=async function(req,res){
     try{
-        let userId = req.param.userId
+        let userId = req.params.userId
         if (!userId) return res.status(400).send({ status: false, message: "Please provide userId" })
         if (!isValidObjectIds(userId)) return res.status(400).send({ status: false, message: "Invalid User Id" })
         let cartData = await cartModel.findOne({ userId: userId })
