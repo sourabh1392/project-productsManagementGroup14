@@ -93,11 +93,7 @@ const createProduct = async (req, res) => {
     catch (err) {
         return res.status(500).send({ status: false, message: err.message })
     }
-
-
 }
-
-
 
 //==================================Get Products by Filter====================================================
 
@@ -145,7 +141,6 @@ const getProducts = async function (req, res) {
     }
 }
 
-
 //=======================================Get Product By Id=====================================================
 
 const getProductById = async function (req, res) {
@@ -160,8 +155,6 @@ const getProductById = async function (req, res) {
         return res.status(500).send({ status: false, message: err.message })
     }
 }
-
-
 
 //=======================================update product =====================================================
 
@@ -252,6 +245,7 @@ const updateProduct = async function (req, res) {
         return res.status(500).send({ status: false, message: err.message })
     }
 }
+
 //=======================================delete product =====================================================
 
 const deleteProduct= async function(req,res){

@@ -23,12 +23,10 @@ items: [{
 totalPrice: {                     //comment: "Holds total price of all the items in the cart"
     type:Number, 
     required:true, 
-    
 },
 totalItems: {                     //comment: "Holds total number of items in the cart"
     type:Number, 
     required:true, 
-    
 },
 },{ timestamps: true })
 

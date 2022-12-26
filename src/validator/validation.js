@@ -46,4 +46,5 @@ const isValidProductSize=function(size){
     if(enumArr.indexOf(size)==-1) return false
     else return true
 }
+
 module.exports={validName,isValid,validPhone,validEmail,isValidPincode,isValidPassword,isValidObjectIds,validImage,isValidProductSize}
