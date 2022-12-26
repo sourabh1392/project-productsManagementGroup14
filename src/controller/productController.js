@@ -6,7 +6,7 @@ const moment = require('moment')
 
 const createProduct = async (req, res) => {
     try {
-        let data = req.body 
+        let data = req.body
         let { title, description, price, currencyId, currencyFormat, isFreeShipping, style, availableSizes, installments, isDeleted } = data
         if (Object.keys(data).length == 0) {
             return res.status(400).send({ Status: false, message: "Please enter data to create product" })
@@ -55,7 +55,7 @@ const createProduct = async (req, res) => {
             return res.status(400).send({ status: false, message: "currency format must be Indian" })
         }
 
-        
+
         let files = req.files
         if (!(files && files.length)) {
             return res.status(400).send({ status: false, message: "Please Provide The Profile Image" });
@@ -65,7 +65,7 @@ const createProduct = async (req, res) => {
 
         //isFreeShipping
         if (isFreeShipping) {
-            if (!(isFreeShipping == "true" || isFreeShipping=="false")) return res.status(400).send({ status: false, message: "isFreeShipping should be either true or false" })
+            if (!(isFreeShipping == "true" || isFreeShipping == "false")) return res.status(400).send({ status: false, message: "isFreeShipping should be either true or false" })
         }
 
         //availableSizes
@@ -75,7 +75,6 @@ const createProduct = async (req, res) => {
             let size = availableSizes.split(" ")
             for (let i = 0; i < size.length; i++) {
                 if (!isValidProductSize(size[i])) return res.status(400).send({ status: false, message: "Please enter valid size" })
-
             }
             data.availableSizes = size
         }
@@ -106,7 +105,7 @@ const getProducts = async function (req, res) {
             if (!isValidProductSize(size)) return res.status(400).send({ status: false, message: "Please enter valid size" })
             obj["availableSizes"] = { $in: size }
         }
-
+        
         if (name) {
             obj["title"] = { $regex: name }
         }
@@ -119,8 +118,9 @@ const getProducts = async function (req, res) {
         if (priceGreaterThan && priceLessThan) {
             obj["price"] = { $gt: priceGreaterThan, $lt: priceLessThan }
         }
-
+        obj["isDeleted"]={$eq:false}
         let findProducts = await productModel.find(obj)
+        console.log(findProducts)
 
         if (!priceSort) priceSort = 1
 
@@ -164,7 +164,7 @@ const updateProduct = async function (req, res) {
         let finddoc = await productModel.findById(productId)
         if (!finddoc) return res.status(404).send({ status: false, message: "no product is found" })
         let data = req.body
-        let { title, description, price, currencyId, productImage,currencyFormat, isFreeShipping, style, availableSizes, installments, isDeleted } = data
+        let { title, description, price, currencyId, productImage, currencyFormat, isFreeShipping, style, availableSizes, installments, isDeleted } = data
         if (Object.keys(data).length == 0) return res.status(400).send({ status: false, message: "enter the data for updation" })
         if (title) {
             if (!title) {
@@ -186,7 +186,7 @@ const updateProduct = async function (req, res) {
             if (!price || price == 0) {
                 return res.status(400).send({ status: false, message: "Please enter price" })
             }
-            if (!Number(price)) return res.status(400).send({ tatus: false, message: "Price should be a valid number format" })
+            if (!Number(price)) return res.status(400).send({ status: false, message: "Price should be a valid number format" })
             data.price = Number(price).toFixed(2)
         }
 
@@ -217,28 +217,28 @@ const updateProduct = async function (req, res) {
         }
 
         if (isFreeShipping) {
-            if (!(isFreeShipping == "true" || isFreeShipping=="false")) return res.status(400).send({ status: false, message: "isFreeShipping should be either true or false" })
+            if (!(isFreeShipping == "true" || isFreeShipping == "false")) return res.status(400).send({ status: false, message: "isFreeShipping should be either true or false" })
         }
 
-            if (availableSizes) {
-                if (availableSizes.includes(',')) return res.status(400).send({ status: false, message: "Please separate the available sizes with space" })
-                availableSizes = availableSizes.toUpperCase()
-                let size = availableSizes.split(" ")
-                for (let i = 0; i < size.length; i++) {
-                    if (!isValidProductSize(size[i])) return res.status(400).send({ status: false, message: "Please enter valid size" })
+        if (availableSizes) {
+            if (availableSizes.includes(',')) return res.status(400).send({ status: false, message: "Please separate the available sizes with space" })
+            availableSizes = availableSizes.toUpperCase()
+            let size = availableSizes.split(" ")
+            for (let i = 0; i < size.length; i++) {
+                if (!isValidProductSize(size[i])) return res.status(400).send({ status: false, message: "Please enter valid size" })
 
-                }
-                data.availableSizes = size
             }
+            data.availableSizes = size
+        }
 
-            //installments
-            if (installments) {
-                if (!Number(installments)) return res.status(400).send({ tatus: false, message: "Installments should be in a valid number format" })
-            }
-        
-        let updateData= await productModel.findOneAndUpdate({_id:productId,isDeleted:false},{$set:data},{new:true})
-        if(!updateData) return res.status(400).send({status:false, message:"data not updated"})
-        return res.status(200).send({status:false, message:"product updated successfully", data:updateData})
+        //installments
+        if (installments) {
+            if (!Number(installments)) return res.status(400).send({ status: false, message: "Installments should be in a valid number format" })
+        }
+
+        let updateData = await productModel.findOneAndUpdate({ _id: productId, isDeleted: false }, { $set: data }, { new: true })
+        if (!updateData) return res.status(400).send({ status: false, message: "data not updated" })
+        return res.status(200).send({ status: true, message: "product updated successfully", data: updateData })
     }
     catch (err) {
         return res.status(500).send({ status: false, message: err.message })
@@ -247,20 +247,24 @@ const updateProduct = async function (req, res) {
 
 //=======================================delete product =====================================================
 
-const deleteProduct= async function(req,res){
-    try{
+const deleteProduct = async function (req, res) {
+    try {
         const productId = req.params.productId
-        if (!isValidObjectIds(productId)) return res.status(400).send({ status: false, message: "Invalid Product Id" })
+        if (!isValidObjectIds(productId)) {
+            return res.status(400).send({ status: false, message: "Invalid Product Id" })
+        }
         const findProduct = await productModel.findById(productId)
-        if (!findProduct) return res.status(404).send({status:false, message:"product document is not found"})
-        if(findProduct.isDeleted == true) return res.status(400).send({ status: false, message: "Product is already deleted" })
-      let deletedata= await productModel.findOneAndUpdate({_id:productId},{isDeleted:true,deletedAt:moment().format()},{new:true})
-      if(!deletedata) return res.status(400).send({status:false, message:"product is not deleted"})
-        return res.status(200).send({ status: true, message: "Product deleted successfully", data:deletedata})
+        if (!findProduct) {
+            return res.status(404).send({ status: false, message: "product document is not found" })
+        }
+        if (findProduct.isDeleted == true) return res.status(400).send({ status: false, message: "Product is already deleted" })
+        let deletedata = await productModel.findOneAndUpdate({ _id: productId }, { isDeleted: true, deletedAt: moment().format() }, { new: true })
+        if (!deletedata) return res.status(400).send({ status: false, message: "product is not deleted" })
+        return res.status(200).send({ status: true, message: "Product deleted successfully", data: deletedata })
     }
-    catch(err){
-        return res.status(500).send({status:false, message:err.message})
+    catch (err) {
+        return res.status(500).send({ status: false, message: err.message })
     }
 }
 
-module.exports = { createProduct, getProducts, getProductById , updateProduct ,deleteProduct}
+module.exports = { createProduct, getProducts, getProductById, updateProduct, deleteProduct }

@@ -1,5 +1,6 @@
 const orderModel = require("../model/orderModel")
 const cartModel = require("../model/cartModel")
+const userModel=require("../model/userModel")
 const { isValidObjectIds } = require('../validator/validation')
 
 //====================================CREATE ORDER========================================================
@@ -12,10 +13,18 @@ const createOrder = async function (req, res) {
         if(!userData){
             return res.status(404).send({status:false,message:"User Not Found"})
         }
-        const cart = await cartModel.findOne({ userId: userId })
+        let cartId=req.body.cartId
+        if(!cartId) return res.status(400).send({status:false,message:"Enter cartId"})
+        const cart = await cartModel.findById(cartId).populate({path:'items.productId'})
         if (!cart) return res.status(404).send({ status: false, message: "Cart Not Found" })
         if (cart.items.length == 0) return res.status(404).send({ status: false, message: "Cart is empty. Please add Product to Cart." })
-
+        let quantity=0;
+        for(let i=0;i<cart.items.length;i++){
+            quantity+=cart.items[i].quantity
+        }
+        cart.totalQuantity=quantity
+        let order=await orderModel.create(cart)
+        return res.status(201).send({status:true,message:"Order Placed",data:order})
     }
     catch (error) {
         return res.status(500).send({ status: false, message: error.message })

@@ -9,7 +9,7 @@ const { validName, isValid, validPhone, validEmail, isValidPincode, isValidPassw
 const createUser = async function (req, res) {
     try {
         let data = req.body
-        let { fname, lname, email, profileImage, phone, password, address } = data
+        let { fname, lname, email, phone, password, address } = data
         if (Object.keys(data).length == 0) return res.status(400).send({ status: false, message: "enter the data" })
 
         //First Name
