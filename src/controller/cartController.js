@@ -76,8 +76,8 @@ const createCart = async function (req, res) {
                 totalItems: quantity
             }
 
-            const findCart = await cartModel.findOne({ userId })
-            if (findCart) return res.status(400).send({ status: false, message: "Cart already exists" })
+            const findCart = await cartModel.findOne({userId})
+            if (findCart) return res.status(400).send({ status: false, message: "Cart already exists for this user so enter cartId" })
 
             const createCart = await cartModel.create(cartData)
             return res.status(201).send({ status: true, message: "Cart created successfully", data: createCart })
@@ -116,6 +116,7 @@ const updateCart = async function (req, res) {
 
         const findCart = await cartModel.findById(cartId).populate([{ path: 'items.productId' }])
         if (!findCart) return res.status(404).send({ status: false, message: "Cart not found" })
+        if (findCart.userId.toString() !== userId) return res.status(403).send({ status: false, message: "Unauthorized User" })
         let itemsArray = findCart.items
         let initialItems = itemsArray.length
         let totalPrice = findCart.totalPrice

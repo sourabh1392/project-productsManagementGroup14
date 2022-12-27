@@ -20,9 +20,11 @@ const createProduct = async (req, res) => {
         if (!isValid(title)) {
             return res.status(400).send({ status: false, message: "Please enter valid title" })
         }
-        let uniqueTitle = await productModel.findOne({ title })
+        let titleInLowerCase= title.toLowerCase()
+        data.title = titleInLowerCase
+        let uniqueTitle = await productModel.findOne({title:titleInLowerCase})
         if (uniqueTitle) {
-            return res.status(400).send({ Status: false, message: "Title already exists" })
+            return res.status(400).send({ status: false, message: "Title already exists" })
         }
 
         //description
@@ -35,7 +37,7 @@ const createProduct = async (req, res) => {
 
         //price
         if (!price || price == 0) {
-            return res.status(400).send({ status: false, message: "Please enter price" })
+            return res.status(400).send({ status: false, message: "Please enter price and it should be greater than 0" })
         }
         if (!Number(price)) return res.status(400).send({ status: false, message: "Price should be a valid number format" })
         data.price = Number(price).toFixed(2)
@@ -108,6 +110,7 @@ const getProducts = async function (req, res) {
         }
         
         if (name) {
+            name= name.toLowerCase()
             obj["title"] = { $regex: name }
         }
         if (priceGreaterThan) {
@@ -120,8 +123,7 @@ const getProducts = async function (req, res) {
             obj["price"] = { $gt: priceGreaterThan, $lt: priceLessThan }
         }
         obj["isDeleted"]={$eq:false}
-        let findProducts = await productModel.find(obj)
-        console.log(findProducts)
+        let findProducts = await productModel.find(obj).select({__v:0})
 
         if (!priceSort) priceSort = 1
 
@@ -163,7 +165,8 @@ const updateProduct = async function (req, res) {
         let productId = req.params.productId
         if (!isValidObjectIds(productId)) return res.status(400).send({ status: false, message: "enter valid productId" })
         let finddoc = await productModel.findById(productId)
-        if (!finddoc) return res.status(404).send({ status: false, message: "no product is found" })
+        if (!finddoc) return res.status(404).send({ status: false, message: "product not found" })
+        if(finddoc.isDeleted==true) return res.status(400).send({status:false, message:"product is not present"})
         let data = req.body
         let { title, description, price, currencyId, productImage, currencyFormat, isFreeShipping, style, availableSizes, installments, isDeleted } = data
         if (Object.keys(data).length == 0) return res.status(400).send({ status: false, message: "enter the data for updation" })
@@ -174,7 +177,13 @@ const updateProduct = async function (req, res) {
             if (!isValid(title)) {
                 return res.status(400).send({ status: false, message: "Please enter valid title" })
             }
+            let titleInLowerCase= title.toLowerCase()
+            data.title = titleInLowerCase
+            let uniqueTitle = await productModel.findOne({title:titleInLowerCase})
+            if (uniqueTitle) {
+                return res.status(400).send({ status: false, message: "Title already exists" })
         }
+    }
         if (description) {
             if (!description) {
                 return res.status(400).send({ status: false, message: "Please enter description" })
@@ -205,7 +214,7 @@ const updateProduct = async function (req, res) {
                 return res.status(400).send({ status: false, message: "Please enter currencyFormat" })
             }
             if (currencyFormat !== "₹") {
-                return res.status(400).send({ status: false, message: "currency format must be Indian" })
+                return res.status(400).send({ status: false, message: "currency format must be ₹" })
             }
         }
         if (productImage) {
@@ -255,11 +264,11 @@ const deleteProduct = async function (req, res) {
             return res.status(400).send({ status: false, message: "Invalid Product Id" })
         }
         const findProduct = await productModel.findById(productId)
-        if (!findProduct) {
+        if (!findProduct || findProduct.isDeleted == true) {
             return res.status(404).send({ status: false, message: "product document is not found" })
         }
-        if (findProduct.isDeleted == true) return res.status(400).send({ status: false, message: "Product is already deleted" })
-        let deletedata = await productModel.findOneAndUpdate({ _id: productId }, { isDeleted: true, deletedAt: moment().format() }, { new: true })
+        
+        let deletedata = await productModel.findOneAndUpdate({ _id: productId }, { isDeleted: true, deletedAt: moment().format() }, { new: true }).select({__v:0})
         if (!deletedata) return res.status(400).send({ status: false, message: "product is not deleted" })
         return res.status(200).send({ status: true, message: "Product deleted successfully", data: deletedata })
     }

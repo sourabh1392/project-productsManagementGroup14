@@ -12,7 +12,7 @@ const isValid=function(value){
 }
 
 const validPhone=function(phone){
-   const phoneRegex=/^[789]\d{9}$/
+   const phoneRegex=/^[6789]\d{9}$/
    return phoneRegex.test(phone)
 }
 

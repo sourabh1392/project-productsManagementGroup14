@@ -26,12 +26,7 @@ const createUser = async function (req, res) {
         let emailExist = await userModel.findOne({ email: email })
         if (emailExist) return res.status(400).send({ status: false, message: "Email Id already exists" })
 
-        //Phone
-        if (!phone) return res.status(400).send({ status: false, message: "Phone No is mandatory" })
-        if (!validPhone(phone)) return res.status(400).send({ status: false, message: "Invalid Phone No" })
-        let phoneExist = await userModel.findOne({ phone: phone })
-        if (phoneExist) return res.status(400).send({ status: false, message: "Phone No already exists" })
-
+        
         //Profile Image
         let files = req.files
         if (!(files && files.length)) {
@@ -39,6 +34,12 @@ const createUser = async function (req, res) {
         }
         const uploadProfileImage = await uploadFile(files[0])
         data.profileImage = uploadProfileImage
+        
+        //Phone
+        if (!phone) return res.status(400).send({ status: false, message: "Phone No is mandatory" })
+        if (!validPhone(phone)) return res.status(400).send({ status: false, message: "Invalid Phone No" })
+        let phoneExist = await userModel.findOne({ phone: phone })
+        if (phoneExist) return res.status(400).send({ status: false, message: "Phone No already exists" })
 
         //Password
         if (!password) return res.status(400).send({ status: false, message: "password is mandatory" })
@@ -55,7 +56,7 @@ const createUser = async function (req, res) {
             if (address.shipping) {
                 if (address.shipping.street) {
                     if (!isValid(address.shipping.street)) return res.status(400).send({ status: false, message: "shipping street is in wrong format" })
-                } else return res.status(400).send({ status: false, message: "address.shipping.street is mandatory" })
+                } else return res.status(400).send({ status: false, message: "shipping street is mandatory" })
 
                 if (address.shipping.city) {
                     if (!isValid(address.shipping.city)) return res.status(400).send({ status: false, message: "shipping city is in wrong format" })
@@ -110,10 +111,10 @@ const login = async function (req, res) {
         const email = req.body.email
         const password = req.body.password
         const check = await userModel.findOne({ email: email })
-        if (!check) return res.status(400).send({ status: false, message: "Please provide correct Email Id" })
+        if (!check) return res.status(400).send({ status: false, message: "Please provide correct credentials" })
         const passCompare = await bcrypt.compare(password, check.password)
 
-        if (!passCompare) return res.status(400).send({ status: false, message: "Please provide correct Password" })
+        if (!passCompare) return res.status(400).send({ status: false, message: "please provide correct credentials" })
         else {
             const token = jwt.sign({ userId: check._id.toString(), password: password }, "Secret key", { expiresIn: "5hr" })
             return res.status(200).send({ status: true, message: "Token generated", data: { userId: check._id, token: token } })
@@ -129,11 +130,10 @@ const getUser = async function (req, res) {
     try {
         let userId = req.params.userId
         if (!isValidObjectIds(userId)) return res.status(400).send({ status: false, message: "Invalid userId" })
+        let findUser= await userModel.findById(userId)
+        if(!findUser) return res.status(404).send({status:false, message: "user not found"})
 
-        const user = await userModel.findOne({ _id: userId })
-        if (!user) return res.status(404).send({ status: false, message: "user not found" })
-
-        return res.status(200).send({ status: true, message: "User details", data: user })
+        return res.status(200).send({ status: true, message: "User details", data: findUser })
     } catch (err) {
         return res.status(500).send({ status: false, message: err.message })
     }
@@ -144,6 +144,8 @@ const updateUser = async function (req, res) {
     try {
         let userId = req.params.userId
         if (!isValidObjectIds(userId)) return res.status(400).send({ status: false, message: "Invalid userId" })
+        let findUser= await userModel.findById(userId)
+        if(!findUser) return res.status(404).send({status:false, message: "user not found"})
 
         let data = req.body
         let { fname, lname, email, profileImage, phone, password, address } = data
@@ -159,11 +161,15 @@ const updateUser = async function (req, res) {
         if (email) {
             if (!isValid(email)) return res.status(400).send({ status: false, message: "Enter Email Id" })
             if (!validEmail(email)) return res.status(400).send({ status: false, message: "Invalid Email Id" })
-        }
+            let emailExist = await userModel.findOne({ email: email })
+            if (emailExist) return res.status(400).send({ status: false, message: "Email Id already exists" }) }
 
         if (phone) {
             if (!isValid(phone)) return res.status(400).send({ status: false, message: "Enter Phone No" })
             if (!validPhone(phone)) return res.status(400).send({ status: false, message: "Invalid Phone No" })
+            let phoneExist = await userModel.findOne({ phone: phone })
+            if (phoneExist) return res.status(400).send({ status: false, message: "Phone No already exists" })
+    
         }
 
         if (profileImage) {

@@ -21,18 +21,15 @@ items: [{
 }],
 totalPrice: {
     type:Number, 
-    required:true, 
-    comment: "Holds total price of all the items in the cart"
+    required:true,                          //comment: "Holds total price of all the items in the cart"
 },
 totalItems: {
     type:Number, 
-    required:true, 
-    comment: "Holds total number of items in the cart"
+    required:true,                            //comment: "Holds total number of items in the cart"
 },
 totalQuantity: {
     type:Number, 
-    required:true, 
-    comment: "Holds total number of quantity in the cart"
+    required:true,                             //comment: "Holds total number of quantity in the cart"
 },
 cancellable: {
     type:Boolean, 
@@ -44,8 +41,7 @@ status: {
     enum:["pending", "completed", "cancelled"]
 },
 deletedAt: {
-    Date, 
-    // when the document is deleted
+    Date,                                             // when the document is deleted
 }, 
 isDeleted: {
     type:Boolean, 

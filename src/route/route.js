@@ -4,7 +4,7 @@ const {authenticate, authorize }=require("../middleware/auth")
 const {createUser, login, getUser, updateUser }=require("../controller/userController")
 const {createCart, updateCart ,getCart ,deleteCart} =require("../controller/cartController")
 const {createProduct, getProducts, getProductById, updateProduct , deleteProduct }=require("../controller/productController")
-const {createOrder, cancelOrder}=require("../controller/orderController")
+const {createOrder, updateOrder}=require("../controller/orderController")
 
 //=======================================User APIs========================================================
 router.post("/register", createUser)
@@ -22,15 +22,13 @@ router.delete("/products/:productId", deleteProduct)
 //=======================================Cart APIs==========================================================
 router.post("/users/:userId/cart", authenticate, authorize, createCart)
 router.put("/users/:userId/cart", authenticate,authorize, updateCart)
-router.get("/users/:userId/cart", getCart )
-router.delete("/users/:userId/cart", deleteCart )
 router.get("/users/:userId/cart", authenticate,authorize, getCart)
 router.delete("/users/:userId/cart", authenticate,authorize, deleteCart)
 
 //=======================================Order APIs==========================================================
 
 router.post("/users/:userId/orders", authenticate, authorize, createOrder)
-router.put("/users/:userId/orders", authenticate, authorize, cancelOrder)
+router.put("/users/:userId/orders", authenticate, authorize, updateOrder)
 
 
 router.all("/*", function (req, res) {
