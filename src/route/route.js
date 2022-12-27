@@ -2,11 +2,7 @@ const express=require("express")
 const router=express.Router()
 const {authenticate, authorize }=require("../middleware/auth")
 const {createUser, login, getUser, updateUser }=require("../controller/userController")
-<<<<<<< HEAD
-const {createCart, updateCart, getCart, deleteCart } =require("../controller/cartController")
-=======
 const {createCart, updateCart ,getCart ,deleteCart} =require("../controller/cartController")
->>>>>>> 5528d478e2e0e96934a706866d599095cb5c0439
 const {createProduct, getProducts, getProductById, updateProduct , deleteProduct }=require("../controller/productController")
 const {createOrder, cancelOrder}=require("../controller/orderController")
 
