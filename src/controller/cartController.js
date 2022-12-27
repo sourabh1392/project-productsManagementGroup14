@@ -4,7 +4,7 @@ const userModel = require('../model/userModel')
 const { isValid, isValidObjectIds } = require('../validator/validation')
 
 
-//====================================CREATE CART========================================================
+//==================================== CREATE CART ========================================================
 
 const createCart = async function (req, res) {
     try {
@@ -89,7 +89,7 @@ const createCart = async function (req, res) {
     }
 }
 
-//=======================================UPDATE CART====================================================
+//======================================= UPDATE CART ====================================================
 
 const updateCart = async function (req, res) {
     try {
@@ -186,9 +186,8 @@ const getCart = async function (req, res) {
     catch (err) {
         return res.status(500).send({ status: false, message: err.message })
     }
-
 }
-//=======================================UPDATE CART====================================================
+//=======================================DELETE CART====================================================
 
 const deleteCart=async function(req,res){
     try{
