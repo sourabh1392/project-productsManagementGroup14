@@ -1,8 +1,7 @@
 const orderModel = require("../model/orderModel")
 const cartModel = require("../model/cartModel")
 const userModel=require("../model/userModel")
-const { isValidObjectIds } = require('../validator/validation')
-const { findOneAndUpdate } = require("../model/productModel")
+const { isValidObjectIds ,isValidStatus } = require('../validator/validation')
 
 //====================================CREATE ORDER========================================================
 
@@ -15,6 +14,7 @@ const createOrder = async function (req, res) {
             return res.status(404).send({status:false,message:"User Not Found"})
         }
         let cartId=req.body.cartId
+        let status= req.body.status
         if(!cartId) return res.status(400).send({status:false,message:"Enter cartId"})
         const cart = await cartModel.findById(cartId).populate({path:'items.productId'}).lean()
         if (!cart) return res.status(404).send({ status: false, message: "Cart Not Found" })
@@ -26,11 +26,13 @@ const createOrder = async function (req, res) {
             quantity+=cart.items[i].quantity
         }
         cart.totalQuantity=quantity
-        let order=await orderModel.create(cart)
-        if(order){
-            let cartUpdate= await cartModel.findOneAndUpdate({_id:cartId},{totalPrice:0, totalItems:0, items:[]},{new:true})
-        }
-        return res.status(201).send({status:true,message:"Order Placed",data:order})
+        if(status){
+            if(!isValidStatus(status)) return res.status(400).send({status:false, message:"invalid status"})}
+         let order=await orderModel.create(cart)
+         if(order){
+             let cartUpdate= await cartModel.findOneAndUpdate({_id:cartId},{totalPrice:0, totalItems:0, items:[]},{new:true})
+            }
+            return res.status(201).send({status:true,message:"Order Placed",data:order})
     }
     catch (error) {
         return res.status(500).send({ status: false, message: error.message })
@@ -52,16 +54,19 @@ const updateOrder = async function (req, res) {
         let {orderId, status} = data
         if(!orderId) return res.status(400).send({status:false, message:"Please provide Order Id"})
         if(!isValidObjectIds((orderId))) return res.status(400).send({status:false, message:"Invalid Order Id"})
-        if(!status) return res.status(400).send({status:false, message:"please provide status to update "})
-
         let findOrder = await orderModel.findOne({_id: orderId, isDeleted: false})
         if(!findOrder) return res.status(404).send({status:false, message:"Order not found"})
-
+        let findCart= await cartModel.findOne({userId:userId})
+        if(!findCart) return res.status(404).send({status:false, message:"cart does not exist"})
+        
         if(req.token.userId !== findOrder.userId.toString()) return res.status(403).send({status:false, message:"Unauthorised User"})
-
+        
         if(findOrder.status == "completed") return res.status(400).send({status:false, message:"Status cannot be updated because it is already set to completed"})
-
+        
         if(findOrder.status == "cancelled") return res.status(400).send({status:false, message:"Status cannot be updated because it is already set to cancelled"})
+        
+        if(!status) return res.status(400).send({status:false, message:"please provide status to update "})
+        if(!isValidStatus(status)) return res.status(400).send({status:false, message:"invalid status"})
         
         if (status === "cancelled") {
             if (findOrder.cancellable == false) return res.status(400).send({ status: false, message: "this order cannot be cancelled" })
