@@ -6,25 +6,27 @@ userId: {
     type:ObjectId, 
     ref:"User", 
     required:true, 
-    unique:true
+    unique:true,
+    trim:true
 },
 items: [{
   productId: {
     type:ObjectId, 
     ref:"Product", 
-    required:true
+    required:true,
+    trim:true
 },
   quantity: {
     type:Number, 
     required:true, 
-    // min 1
+    trim:true
 }
 }],
-totalPrice: {                     //comment: "Holds total price of all the items in the cart"
+totalPrice: {                    
     type:Number, 
     required:true, 
 },
-totalItems: {                     //comment: "Holds total number of items in the cart"
+totalItems: {                     
     type:Number, 
     required:true, 
 },

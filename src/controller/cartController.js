@@ -3,8 +3,7 @@ const productModel = require('../model/productModel')
 const userModel = require('../model/userModel')
 const { isValid, isValidObjectIds } = require('../validator/validation')
 
-
-//==================================== CREATE CART ========================================================
+//========================================= CREATE CART =========================================================
 
 const createCart = async function (req, res) {
     try {
@@ -62,7 +61,7 @@ const createCart = async function (req, res) {
             const addToCart = await cartModel.findOneAndUpdate({ _id: cartId }, { items: itemsArray, totalPrice: totalPrice, totalItems: totalItems }, { new: true }).select({ __v: 0 })
 
             if (!addToCart) return res.status(404).send({ status: false, message: "Cart not found" })
-            else return res.status(200).send({ status: true, message: "Items added successfully", data: addToCart })
+            else return res.status(200).send({ status: true, message: "Success", data: addToCart })
         }
 
         else {
@@ -80,7 +79,7 @@ const createCart = async function (req, res) {
             if (findCart) return res.status(400).send({ status: false, message: "Cart already exists for this user so enter cartId" })
 
             const createCart = await cartModel.create(cartData)
-            return res.status(201).send({ status: true, message: "Cart created successfully", data: createCart })
+            return res.status(201).send({ status: true, message: "Success", data: createCart })
         }
 
     }
@@ -163,7 +162,7 @@ const updateCart = async function (req, res) {
     }
 }
 
-//=======================================GET CART DETAILS================================================
+//======================================= GET CART DETAILS ================================================
 
 const getCart = async function (req, res) {
     try {
@@ -188,7 +187,7 @@ const getCart = async function (req, res) {
         return res.status(500).send({ status: false, message: err.message })
     }
 }
-//=======================================DELETE CART====================================================
+//======================================= DELETE CART ====================================================
 
 const deleteCart=async function(req,res){
     try{
@@ -205,7 +204,7 @@ const deleteCart=async function(req,res){
         if(!deleteCart){
             return res.status(400).send({status:false,message:"Cart already deleted"})
         }
-        return res.status(204).send({ status: true, message: "cart Deleted Successfully", data: deleteCart })
+        return res.status(204).send({ status: true, message: "Success", data: deleteCart })
     }
     catch(error){
         return res.status(500).send({status:false,message:error.message})
