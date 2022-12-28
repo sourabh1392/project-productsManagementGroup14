@@ -105,7 +105,7 @@ const createUser = async function (req, res) {
     }
 }
 
-//==========================================Login============================================================
+//========================================== Login ============================================================
 const login = async function (req, res) {
     try {
         const email = req.body.email
@@ -117,7 +117,7 @@ const login = async function (req, res) {
         if (!passCompare) return res.status(400).send({ status: false, message: "please provide correct credentials" })
         else {
             const token = jwt.sign({ userId: check._id.toString(), password: password }, "Secret key", { expiresIn: "5hr" })
-            return res.status(200).send({ status: true, message: "Token generated", data: { userId: check._id, token: token } })
+            return res.status(200).send({ status: true, message: "User Login Successfull", data: { userId: check._id, token: token } })
         }
     }
     catch (err) {
@@ -125,7 +125,7 @@ const login = async function (req, res) {
     }
 }
 
-//=======================================Get User Details================================================
+//======================================= Get User Details ================================================
 const getUser = async function (req, res) {
     try {
         let userId = req.params.userId
@@ -133,12 +133,12 @@ const getUser = async function (req, res) {
         let findUser= await userModel.findById(userId)
         if(!findUser) return res.status(404).send({status:false, message: "user not found"})
 
-        return res.status(200).send({ status: true, message: "User details", data: findUser })
+        return res.status(200).send({ status: true, message: "User profile details", data: findUser })
     } catch (err) {
         return res.status(500).send({ status: false, message: err.message })
     }
 }
-//=======================================Update User Details==============================================
+//======================================= Update User Details ==============================================
 
 const updateUser = async function (req, res) {
     try {
