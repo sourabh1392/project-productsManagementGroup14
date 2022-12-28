@@ -67,7 +67,7 @@ const updateOrder = async function (req, res) {
         
         if(!status) return res.status(400).send({status:false, message:"please provide status to update "})
         if(!isValidStatus(status)) return res.status(400).send({status:false, message:"invalid status"})
-        
+
         if (status === "cancelled") {
             if (findOrder.cancellable == false) return res.status(400).send({ status: false, message: "this order cannot be cancelled" })
             else findOrder.status = "cancelled"

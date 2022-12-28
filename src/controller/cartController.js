@@ -27,9 +27,7 @@ const createCart = async function (req, res) {
         }
 
         if (!quantity) {
-            if (quantity == 0) return res.status(400).send({ status: false, message: "Quantity should be greater than 0" })
-            quantity = 1
-        }
+            quantity = 1}
         if (typeof quantity !== 'number') return res.status(400).send({ status: false, message: "Invalid quantity" })
 
         let product = await productModel.findById(productId)

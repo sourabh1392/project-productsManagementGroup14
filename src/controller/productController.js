@@ -14,7 +14,7 @@ const createProduct = async (req, res) => {
         }
 
         //title
-        if (!title) {
+        if (!title) { 
             return res.status(400).send({ status: false, message: "Please enter Title" })
         }
         if (!isValid(title)) {
