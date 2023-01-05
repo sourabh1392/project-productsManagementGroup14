@@ -3,7 +3,7 @@ const productModel = require('../model/productModel')
 const userModel = require('../model/userModel')
 const { isValid, isValidObjectIds } = require('../validator/validation')
 
-//========================================= CREATE CART =========================================================
+//========================================= CREATE CART==========================================================
 
 const createCart = async function (req, res) {
     try {
